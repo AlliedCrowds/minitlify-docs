@@ -1,71 +1,38 @@
 ---
-title: Introduction
-description: "Welcome to the home of your new documentation"
+title: 'Documentation'
 ---
+## Pagination and Data Format
 
-<img
-  className="block dark:hidden"
-  src="/images/hero-light.png"
-  alt="Hero Light"
-/>
-<img
-  className="hidden dark:block"
-  src="/images/hero-dark.png"
-  alt="Hero Dark"
-/>
+### 1. Pagination
+Our API uses **cursor-based pagination** for all endpoints. To retrieve the next page of results for a given endpoint, use the `cursor` value provided in the response of the previous request.
 
-## Setting up
+### 2. Data Format
+All data returned by the API is provided in a compressed [JSON Lines](https://jsonlines.org) format, typically in `.gz` compression. You do not need to extract these files beforehand, as libraries such as `pandas` can handle reading compressed files directly.
 
-The first step to world-class documentation is setting up your editing environments.
+### 3. Processing Large Files
+Due to the large volume of data, it is recommended to read the data in chunks to optimize performance. Below is an example using Python and the `pandas` library to process a compressed JSON Lines file:
 
-<CardGroup cols={2}>
-  <Card
-    title="Edit Your Docs"
-    icon="pen-to-square"
-    href="https://mintlify.com/docs/quickstart"
-  >
-    Get your docs set up locally for easy development
-  </Card>
-  <Card
-    title="Preview Changes"
-    icon="image"
-    href="https://mintlify.com/docs/development"
-  >
-    Preview your changes before you push to make sure they're perfect
-  </Card>
-</CardGroup>
+```python read_jsonl_file.py
+import pandas as pd
 
-## Make it yours
+def read_json_file(file_path):
+    try:
+        # Read the compressed JSON lines file in chunks
+        df = pd.read_json(file_path, compression="gzip", lines=True, chunksize=10000)
+        for df_chunk in df:
+            print(df_chunk.head())
+        return df
+    except (ValueError, IOError) as e:
+        raise ValueError(f"Failed to read the JSON file: {e}")
 
-Update your docs to your brand and add valuable content for the best user conversion.
+if __name__ == "__main__":
+    df = read_json_file("price_explorer.jsonl.gz")
+```
 
-<CardGroup cols={2}>
-  <Card
-    title="Customize Style"
-    icon="palette"
-    href="https://mintlify.com/docs/settings/global"
-  >
-    Customize your docs to your company's colors and brands
-  </Card>
-  <Card
-    title="Reference APIs"
-    icon="code"
-    href="https://mintlify.com/docs/api-playground/openapi"
-  >
-    Automatically generate endpoints from an OpenAPI spec
-  </Card>
-  <Card
-    title="Add Components"
-    icon="screwdriver-wrench"
-    href="https://mintlify.com/docs/content/components/accordions"
-  >
-    Build interactive features and designs to guide your users
-  </Card>
-  <Card
-    title="Get Inspiration"
-    icon="stars"
-    href="https://mintlify.com/customers"
-  >
-    Check out our showcase of our favorite documentation
-  </Card>
-</CardGroup>
+
+
+- **Compression Handling:** The `pandas` library can read compressed files directly, so files do not need to be manually extracted before processing.
+- **Reading in Chunks:** To handle large files efficiently, the data is read in manageable chunks using the `chunksize` parameter. The chunk size can be adjusted based on the client’s memory and performance requirements.
+
+### 4. Download URLs
+Any download URLs provided by the API are valid for **one minute** after the request is made. Ensure that you download the files within this time frame to avoid errors.
