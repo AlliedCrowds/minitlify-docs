@@ -1,12 +1,6 @@
-# Mintlify Starter Kit
+# AlliedOffsets API v2
 
-Click on `Use this template` to copy the Mintlify starter kit. The starter kit contains examples including
 
-- Guide pages
-- Navigation
-- Customizations
-- API Reference pages
-- Use of popular components
 
 ### Development
 
@@ -20,6 +14,12 @@ Run the following command at the root of your documentation (where docs.json is)
 
 ```
 mintlify dev
+```
+
+### Updating api endpoints automatically
+The following command will automatically create files for each endpoint
+```
+npx @mintlify/scraping@latest openapi-file https://api.alliedoffsets.com/v2/openapi.json -o api-reference
 ```
 
 ### Publishing Changes
